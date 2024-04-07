@@ -2,25 +2,31 @@ import { Link } from "react-router-dom";
 import Navbar from "../Shared/Navbar/Navbar";
 import { useContext } from "react";
 import { AuthContext } from "../../Context/ContextComponent";
+import { updateProfile } from "firebase/auth";
 
 
 const Register = () => {
     const authInfo = useContext(AuthContext)
-    const {createUser} = authInfo
+    const {createUser,user} = authInfo
     const handleRegister = e =>{
         e.preventDefault()
+//get form data
         const form = new FormData(e.currentTarget)
         const name = form.get('name')
         const photo = form.get('photo')
         const email = form.get('email')
         const password = form.get('password')
-        console.log(name,photo,email,password)
-
+//create user
         createUser(email,password)
         .then(result => {
-            result.user.displayName = name
-            result.user.photoURL = photo
-            console.log(result.user)
+            // Update user profile
+            return updateProfile(result.user, { displayName: name, photoURL: photo })
+            .then(() => {
+                console.log("User profile updated successfully");
+            })
+            .catch(error => {
+                console.log("Error updating user profile: ", error.message);
+            });
         })
         .catch(error=>{
             console.log(error.message)

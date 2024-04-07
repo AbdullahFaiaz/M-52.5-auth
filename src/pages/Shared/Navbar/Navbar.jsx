@@ -1,8 +1,20 @@
 import { Link, NavLink } from "react-router-dom";
 import userDefaultPic from '../../../assets/user.png';
+import { useContext } from "react";
+import { AuthContext } from "../../../Context/ContextComponent";
+import auth from "../../../firebase/firebase.config";
 
 const Navbar = () => {
+    const authInfo = useContext(AuthContext)
+    const {user,logOut} = authInfo
 
+    const handleLogOut = () =>{
+        logOut()
+        .then(console.log("Signed Out"))
+        .catch(error=>{
+            console.log(error.message)
+        })
+    }
     const navLinks = <>
         <li><NavLink to="/">Home</NavLink></li>
         <li><NavLink to="/about">About</NavLink></li>
@@ -13,6 +25,11 @@ const Navbar = () => {
     </>
 
     return (
+        <div>
+<div>
+    
+</div>
+
         <div className="navbar bg-base-100">
             <div className="navbar-start">
                 <div className="dropdown">
@@ -33,14 +50,23 @@ const Navbar = () => {
             <div className="navbar-end">
                 <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                     <div className="w-10 rounded-full">
+                    {user?.photoURL ? <div> <img className="" src={user.photoURL} alt="User Photo"></img> <p>{user.displayName}</p> </div>:
                         <img src={userDefaultPic} />
+                    }   
                     </div>
                 </label>
-                <Link to={"/login"}>
-                    <button className="btn">Login</button>
-                </Link>
+                {
+                user? 
+                    <button onClick={handleLogOut} className="btn">Log Out</button> :
+                    <Link to={"/login"}>
+                        <button className="btn">Login</button>
+                    </Link>
+                }
+                {user && <p>{user.displayName}</p>}
             </div>
         </div>
+        </div>
+
     );
 };
 
